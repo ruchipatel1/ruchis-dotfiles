@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# Create a cmux workspace for the given directory, cwd set to that path, sidebar title = dirname.
+set -euo pipefail
+
+cmux_bin() {
+  if command -v cmux >/dev/null 2>&1; then
+    command -v cmux
+  elif [[ -x "/Applications/cmux.app/Contents/Resources/bin/cmux" ]]; then
+    echo "/Applications/cmux.app/Contents/Resources/bin/cmux"
+  else
+    return 1
+  fi
+}
+
+if ! CMUX="$(cmux_bin)"; then
+  echo "cmux not found. Install the app, then:" >&2
+  echo "  brew tap manaflow-ai/cmux && brew install --cask cmux" >&2
+  echo "  sudo ln -sf /Applications/cmux.app/Contents/Resources/bin/cmux /usr/local/bin/cmux" >&2
+  exit 1
+fi
+
+target="${1:-.}"
+path="$(cd "$target" && pwd)"
+name="$(basename "$path")"
+
+"$CMUX" new-workspace --cwd "$path"
+"$CMUX" rename-workspace "$name"

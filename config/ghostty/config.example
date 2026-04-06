@@ -1,0 +1,9 @@
+# Merge into ~/.config/ghostty/config (or use as a starter file).
+# Themes are installed to ~/.config/ghostty/themes/ by install.sh
+
+# Catppuccin Macchiato (switch to catppuccin-frappe if you prefer)
+theme = catppuccin-macchiato
+
+# After `brew bundle` installs font-jetbrains-mono:
+# font-family = JetBrains Mono
+# font-size = 14

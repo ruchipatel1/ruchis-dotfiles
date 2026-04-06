@@ -1,0 +1,24 @@
+[user]
+	# Set your name/email here or in machine-local ~/.gitconfig.local
+	# name = Your Name
+	# email = you@example.com
+
+[core]
+	pager = diffnav
+	autocrlf = input
+
+[interactive]
+	diffFilter = delta --color-only
+
+[merge]
+	conflictStyle = zdiff3
+
+[delta]
+	navigate = true
+	light = false
+	syntax-theme = Catppuccin Macchiato
+	line-numbers = true
+	side-by-side = false
+
+[diff]
+	colorMoved = default
