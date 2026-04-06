@@ -1,6 +1,6 @@
 # Dotfiles
 
-Zsh plugins (syntax highlighting, autosuggestions, extra completions), Catppuccin **Frappé** and **Macchiato** for `bat`/delta/Ghostty, Git wired for **diffnav** + delta, **lazygit**, and a **cmux** layout helper (AI CLI + command shell).
+Zsh plugins (syntax highlighting, autosuggestions, extra completions), Catppuccin **Frappé** and **Macchiato** for `bat`/delta/Ghostty, Git wired for **diffnav** + delta, **lazygit**, `direnv`, `zoxide`, `atuin`, and a **cmux** layout helper (AI CLI + command shell).
 
 ## Prerequisites
 
@@ -17,11 +17,20 @@ chmod +x install.sh
 
 Then restart the terminal or `source ~/.zshrc`.
 
-`install.sh` runs `brew bundle` (including **JetBrains Mono** via `font-jetbrains-mono`), clones zsh plugins into `zsh/plugins/`, installs Catppuccin bat themes, and symlinks `~/.zshrc`, `~/.config/bat/config`, `~/.config/git/config`, Ghostty palette files, and `~/.local/bin/cmux-ai-split`.
+`install.sh` runs `brew bundle` (including **JetBrains Mono** via `font-jetbrains-mono`), installs or updates **Oh My Zsh** in `~/.oh-my-zsh`, clones repo-managed zsh plugins into `zsh/plugins/`, installs Catppuccin bat themes, and symlinks `~/.zshrc`, `~/.config/bat/config`, `~/.config/git/config`, Ghostty palette files, and `~/.local/bin/cmux-ai-split`.
 
-## Zsh plugins
+## Zsh
 
-Managed as shallow git clones (see `install.sh`):
+The shell setup uses **Oh My Zsh** for base initialization plus a small set of repo-managed plugins.
+
+Included shell enhancements:
+
+- richer completion matching and caching
+- directory stack helpers (`auto_cd`, pushd history)
+- optional `direnv`, `zoxide`, and `atuin` hooks when those tools are installed
+- lightweight git and `ls` aliases
+
+Repo-managed plugin clones (see `install.sh`):
 
 - [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting)
 - [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions)

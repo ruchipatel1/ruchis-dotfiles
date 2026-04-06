@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
-# Bootstrap dotfiles: Homebrew deps, zsh plugins, Catppuccin bat themes, config links.
+# Bootstrap dotfiles: Homebrew deps, Oh My Zsh, zsh plugins, Catppuccin bat themes, config links.
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PLUGINS_DIR="${REPO_ROOT}/zsh/plugins"
+OMZ_DIR="${HOME}/.oh-my-zsh"
 BAT_CONFIG_DIR="$(command -v bat >/dev/null 2>&1 && bat --config-dir || echo "${HOME}/.config/bat")"
 
 log() { printf '\033[0;36m==>\033[0m %s\n' "$*"; }
@@ -15,6 +16,14 @@ fi
 
 log "Installing Homebrew bundle"
 brew bundle --file="${REPO_ROOT}/Brewfile"
+
+log "Installing Oh My Zsh"
+if [[ ! -d "${OMZ_DIR}" ]]; then
+  RUNZSH=no CHSH=no KEEP_ZSHRC=yes \
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+else
+  log "Oh My Zsh already present at ${OMZ_DIR}; leaving it as-is"
+fi
 
 log "Cloning zsh plugins"
 mkdir -p "${PLUGINS_DIR}"
