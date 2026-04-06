@@ -58,6 +58,7 @@ ctp-macchiato() {
 
 # Tools
 command -v lazygit >/dev/null && alias lg=lazygit
+[[ -x "${HOME}/.local/bin/cmux-ai-split" ]] && alias csplit='cmux-ai-split'
 
 # Prompt
 autoload -Uz colors && colors

@@ -61,7 +61,8 @@ log "Ghostty: add 'theme = catppuccin-macchiato' (or catppuccin-frappe) to ~/.co
 
 log "Adding bin/ to PATH: append to ~/.zshrc.local if you use a custom PATH block"
 mkdir -p "${HOME}/.local/bin"
-ln -sf "${REPO_ROOT}/bin/cmux-workspace" "${HOME}/.local/bin/cmux-workspace"
-chmod +x "${REPO_ROOT}/bin/cmux-workspace"
+rm -f "${HOME}/.local/bin/cmux-workspace"
+ln -sf "${REPO_ROOT}/bin/cmux-ai-split" "${HOME}/.local/bin/cmux-ai-split"
+chmod +x "${REPO_ROOT}/bin/cmux-ai-split"
 
 log "Done. Open a new zsh, or: source ~/.zshrc"

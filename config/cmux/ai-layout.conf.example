@@ -1,0 +1,14 @@
+# Optional: copy to ~/.config/cmux-ai-layout.conf and customize.
+# This file is sourced by cmux-ai-split (bash) when it exists.
+
+# Default preset when you omit --ai (also: export CMUX_AI_TOOL=cursor)
+# export CMUX_AI_TOOL=claude
+
+# Override the shell command launched for each preset (must be on PATH in cmux)
+# export CMUX_AI_CMD_CLAUDE="claude"
+# export CMUX_AI_CMD_CURSOR="agent"
+# export CMUX_AI_CMD_CODEX="codex"
+
+# If the AI ends up in the wrong split after new-split left, swap these (0-based)
+# export CMUX_AI_PANE_INDEX=0
+# export CMUX_CMD_PANE_INDEX=1

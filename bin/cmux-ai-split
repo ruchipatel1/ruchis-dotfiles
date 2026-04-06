@@ -1,0 +1,140 @@
+#!/usr/bin/env bash
+# cmux-ai-split — new workspace with a left AI CLI pane and a right shell for commands.
+# Switch tools with --ai <preset> or CMUX_AI_TOOL; override commands via env or ~/.config/cmux-ai-layout.conf
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+Usage: cmux-ai-split [options] [DIR]
+
+Options:
+  -a, --ai NAME   Preset: claude | cursor | codex | <custom>
+                  (default: CMUX_AI_TOOL or claude). Custom uses NAME as the command.
+  -c, --cwd DIR   Working directory (default: current directory)
+  -l, --list      Print preset names and resolved commands, then exit
+  -h, --help      Show this help
+
+Examples:
+  cmux-ai-split .                    # claude (left) + shell (right)
+  cmux-ai-split -a cursor ~/src/app
+  CMUX_AI_TOOL=cursor cmux-ai-split
+
+Config: ~/.config/cmux-ai-layout.conf (optional, sourced as bash)
+Env:    CMUX_AI_CMD_CLAUDE, CMUX_AI_CMD_CURSOR, CMUX_AI_CMD_CODEX
+        CMUX_AI_PANE_INDEX / CMUX_CMD_PANE_INDEX if splits focus the wrong pane
+EOF
+}
+
+CMUX_AI_LAYOUT_CONF="${CMUX_AI_LAYOUT_CONF:-${HOME}/.config/cmux-ai-layout.conf}"
+if [[ -r "$CMUX_AI_LAYOUT_CONF" ]]; then
+  # shellcheck source=/dev/null
+  source "$CMUX_AI_LAYOUT_CONF"
+fi
+
+cmux_bin() {
+  if command -v cmux >/dev/null 2>&1; then
+    command -v cmux
+  elif [[ -x "/Applications/cmux.app/Contents/Resources/bin/cmux" ]]; then
+    echo "/Applications/cmux.app/Contents/Resources/bin/cmux"
+  else
+    return 1
+  fi
+}
+
+resolve_ai_command() {
+  local preset="${1:?}"
+  local upper
+  upper="$(printf '%s' "$preset" | tr '[:lower:]' '[:upper:]' | tr -c '[:alnum:]' '_')"
+  case "$preset" in
+    claude)
+      printf '%s' "${CMUX_AI_CMD_CLAUDE:-claude}"
+      ;;
+    cursor)
+      # Cursor’s terminal agent CLI is typically `agent` (see https://cursor.com/docs/cli/overview)
+      printf '%s' "${CMUX_AI_CMD_CURSOR:-agent}"
+      ;;
+    codex)
+      printf '%s' "${CMUX_AI_CMD_CODEX:-codex}"
+      ;;
+    *)
+      # Custom preset: CMUX_AI_CMD_<UPPERCASE_SANITIZED> or use preset as the command
+      local _o
+      _o="$(eval "printf '%s' \"\${CMUX_AI_CMD_${upper}-}\"")"
+      if [[ -n "$_o" ]]; then
+        printf '%s' "$_o"
+      else
+        printf '%s' "$preset"
+      fi
+      ;;
+  esac
+}
+
+list_presets() {
+  echo "Preset -> command (override with CMUX_AI_CMD_<PRESET>)"
+  for p in claude cursor codex; do
+    printf '  %-10s %s\n' "$p" "$(resolve_ai_command "$p")"
+  done
+}
+
+AI_PRESET="${CMUX_AI_TOOL:-claude}"
+target="."
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -a | --ai)
+      AI_PRESET="${2:?}"
+      shift 2
+      ;;
+    -c | --cwd)
+      target="${2:?}"
+      shift 2
+      ;;
+    -l | --list)
+      list_presets
+      exit 0
+      ;;
+    -h | --help)
+      usage
+      exit 0
+      ;;
+    -*)
+      echo "Unknown option: $1" >&2
+      usage >&2
+      exit 1
+      ;;
+    *)
+      target="$1"
+      shift
+      ;;
+  esac
+done
+
+if ! CMUX="$(cmux_bin)"; then
+  echo "cmux not found. Install the app, then:" >&2
+  echo "  brew tap manaflow-ai/cmux && brew install --cask cmux" >&2
+  echo "  sudo ln -sf /Applications/cmux.app/Contents/Resources/bin/cmux /usr/local/bin/cmux" >&2
+  exit 1
+fi
+
+path="$(cd "$target" && pwd)"
+name="$(basename "$path")"
+AI_CMD="$(resolve_ai_command "$AI_PRESET")"
+
+_cmd0="${AI_CMD%% *}"
+if ! command -v "$_cmd0" &>/dev/null && [[ "$_cmd0" != */* ]]; then
+  echo "Warning: '${_cmd0}' not found on PATH in this shell; cmux may still find it if your login PATH differs." >&2
+fi
+unset _cmd0
+
+AI_PANE="${CMUX_AI_PANE_INDEX:-0}"
+CMD_PANE="${CMUX_CMD_PANE_INDEX:-1}"
+
+"$CMUX" new-workspace --cwd "$path"
+"$CMUX" rename-workspace "$name"
+# New pane on the left (AI); original surface stays on the right for ad-hoc commands.
+"$CMUX" new-split left
+# Ghostty/cmux usually focus the new pane; still select explicitly before sending.
+"$CMUX" focus-pane --pane "$AI_PANE"
+"$CMUX" send "$AI_CMD"
+"$CMUX" send-key enter
+"$CMUX" focus-pane --pane "$CMD_PANE"
