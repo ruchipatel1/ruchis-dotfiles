@@ -13,6 +13,12 @@
 [merge]
 	conflictStyle = zdiff3
 
+[pull]
+	ff = only
+
+[push]
+	autoSetupRemote = true
+
 [delta]
 	navigate = true
 	light = false
