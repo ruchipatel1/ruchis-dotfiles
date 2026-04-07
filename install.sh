@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
-# Bootstrap dotfiles: Homebrew deps, Oh My Zsh, zsh plugins, Catppuccin bat themes, config links.
+# Bootstrap dotfiles: Homebrew deps, Oh My Zsh, Catppuccin bat themes, config links.
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PLUGINS_DIR="${REPO_ROOT}/zsh/plugins"
 OMZ_DIR="${HOME}/.oh-my-zsh"
 BAT_CONFIG_DIR="$(command -v bat >/dev/null 2>&1 && bat --config-dir || echo "${HOME}/.config/bat")"
 
@@ -24,21 +23,6 @@ if [[ ! -d "${OMZ_DIR}" ]]; then
 else
   log "Oh My Zsh already present at ${OMZ_DIR}; leaving it as-is"
 fi
-
-log "Cloning zsh plugins"
-mkdir -p "${PLUGINS_DIR}"
-clone_plugin() {
-  local url="$1" name
-  name="$(basename "$url" .git)"
-  if [[ ! -d "${PLUGINS_DIR}/${name}/.git" ]]; then
-    git clone --depth 1 "$url" "${PLUGINS_DIR}/${name}"
-  else
-    git -C "${PLUGINS_DIR}/${name}" pull --ff-only || true
-  fi
-}
-clone_plugin https://github.com/zsh-users/zsh-syntax-highlighting.git
-clone_plugin https://github.com/zsh-users/zsh-autosuggestions.git
-clone_plugin https://github.com/zsh-users/zsh-completions.git
 
 log "Installing Catppuccin Frappé and Macchiato themes for bat"
 mkdir -p "${BAT_CONFIG_DIR}/themes"

@@ -17,11 +17,11 @@ chmod +x install.sh
 
 Then restart the terminal or `source ~/.zshrc`.
 
-`install.sh` runs `brew bundle` (including **JetBrains Mono** via `font-jetbrains-mono`), installs or updates **Oh My Zsh** in `~/.oh-my-zsh`, clones repo-managed zsh plugins into `zsh/plugins/`, installs Catppuccin bat themes, and symlinks `~/.zshrc`, `~/.config/bat/config`, `~/.config/git/config`, Ghostty palette files, and `~/.local/bin/cmux-ai-split`.
+`install.sh` runs `brew bundle` (including **JetBrains Mono** via `font-jetbrains-mono`), installs or updates **Oh My Zsh** in `~/.oh-my-zsh`, installs zsh plugins through Homebrew, installs Catppuccin bat themes, and symlinks `~/.zshrc`, `~/.config/bat/config`, `~/.config/git/config`, Ghostty palette files, and `~/.local/bin/cmux-ai-split`.
 
 ## Zsh
 
-The shell setup uses **Oh My Zsh** for base initialization plus a small set of repo-managed plugins.
+The shell setup uses **Oh My Zsh** for base initialization plus Homebrew-installed zsh plugins.
 
 Included shell enhancements:
 
@@ -30,11 +30,12 @@ Included shell enhancements:
 - optional `direnv`, `zoxide`, and `atuin` hooks when those tools are installed
 - lightweight git and `ls` aliases
 
-Repo-managed plugin clones (see `install.sh`):
+Homebrew-managed plugins:
 
 - [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting)
 - [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions)
 - [zsh-completions](https://github.com/zsh-users/zsh-completions) (extra completion definitions — the usual “autocomplete” stack with the other two)
+- [zsh-you-should-use](https://github.com/MichaelAquilina/zsh-you-should-use)
 
 ## Catppuccin
 

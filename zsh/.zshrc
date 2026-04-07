@@ -1,7 +1,7 @@
 # Dotfiles root (repo): zsh/.zshrc -> parent of zsh/
 export DOTFILES="${DOTFILES:-${${(%):-%x}:A:h:h}}"
 export ZSH="${ZSH:-${HOME}/.oh-my-zsh}"
-ZSH_THEME=""
+ZSH_THEME="robbyrussell"
 plugins=(git)
 
 # History
@@ -22,10 +22,19 @@ path=(
   $path
 )
 
+_brew_prefix=""
+if command -v brew >/dev/null 2>&1; then
+  _brew_prefix="$(brew --prefix 2>/dev/null || true)"
+fi
+
 # Completion: extra definitions (load before Oh My Zsh)
-fpath=("${DOTFILES}/zsh/plugins/zsh-completions/src" $fpath)
+if [[ -n "${_brew_prefix}" && -d "${_brew_prefix}/share/zsh-completions" ]]; then
+  fpath=("${_brew_prefix}/share/zsh-completions" $fpath)
+fi
 export ZSH_CACHE_DIR="${XDG_CACHE_HOME:-${HOME}/.cache}/zsh"
 mkdir -p "${ZSH_CACHE_DIR}"
+
+export EDITOR='mvim'
 
 _clean_fpath=()
 for _fpath_dir in $fpath; do
@@ -81,12 +90,14 @@ bindkey '^[[A' up-line-or-beginning-search
 bindkey '^[[B' down-line-or-beginning-search
 
 # zsh-autosuggestions (before syntax highlighting)
-[[ -r "${DOTFILES}/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh" ]] &&
-  source "${DOTFILES}/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh"
+if [[ -n "${_brew_prefix}" && -r "${_brew_prefix}/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]]; then
+  source "${_brew_prefix}/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+fi
 
 # zsh-syntax-highlighting must be last
-[[ -r "${DOTFILES}/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]] &&
-  source "${DOTFILES}/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+if [[ -n "${_brew_prefix}" && -r "${_brew_prefix}/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]]; then
+  source "${_brew_prefix}/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+fi
 
 # fzf (Homebrew)
 if command -v brew >/dev/null 2>&1; then
@@ -137,4 +148,8 @@ alias la='ls -lAh'
 
 # Prompt
 autoload -Uz colors && colors
-PS1="%F{cyan}%~%f %# "
+unset _brew_prefix
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion

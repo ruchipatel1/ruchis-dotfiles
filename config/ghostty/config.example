@@ -2,7 +2,7 @@
 # Themes are installed to ~/.config/ghostty/themes/ by install.sh
 
 # Catppuccin Macchiato (switch to catppuccin-frappe if you prefer)
-theme = catppuccin-macchiato
+theme = Catppuccin Macchiato
 
 # After `brew bundle` installs font-jetbrains-mono:
 # font-family = JetBrains Mono
